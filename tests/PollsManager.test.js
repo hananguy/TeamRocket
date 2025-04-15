@@ -1,28 +1,28 @@
-import PollService from '../src/services/PollService.js';
+import PollsManager from '../src/services/PollsManager.js';
 import { jest } from '@jest/globals';
 
 
-describe('PollService', () => {
-  let pollRepository;
-  let pollService;
+describe('PollsManager', () => {
+  let pollsMemoryManagement;
+  let pollsManager;
 
   beforeEach(() => {
-    // Arrange: create a fake pollRepository with jest mock functions.
-    pollRepository = {
+    // Arrange: create a fakePollsMemoryManagement with jest mock functions.
+   pollsMemoryManagement = {
       createPoll: jest.fn(),
       getPoll: jest.fn(),
       votePoll: jest.fn()
     };
-    pollService = new PollService(pollRepository);
+  pollsManager = new PollsManager(pollsMemoryManagement);
   });
 
   // Basic Functionality Tests
 
-  test('getPolls should return the pollRepository instance', () => {
+  test('getPolls should return thePollsMemoryManagement instance', () => {
     // Act
-    const result = pollService.getPolls();
+    const result = pollsManager.getPolls();
     // Assert
-    expect(result).toBe(pollRepository);
+    expect(result).toBe(pollsMemoryManagement);
   });
 
   test('createPoll should call repository.createPoll with valid question and options', () => {
@@ -30,13 +30,13 @@ describe('PollService', () => {
     const question = 'What is your favorite color?';
     const options = ['Red', 'Blue'];
     const createdPoll = { id: 1, question, options };
-    pollRepository.createPoll.mockReturnValue(createdPoll);
+   pollsMemoryManagement.createPoll.mockReturnValue(createdPoll);
     
     // Act
-    const result = pollService.createPoll(question, options);
+    const result = pollsManager.createPoll(question, options);
     
     // Assert
-    expect(pollRepository.createPoll).toHaveBeenCalledWith(question, options);
+    expect(pollsMemoryManagement.createPoll).toHaveBeenCalledWith(question, options);
     expect(result).toEqual(createdPoll);
   });
 
@@ -47,7 +47,7 @@ describe('PollService', () => {
     const question = '';
     const options = ['Option1', 'Option2'];
     // Act & Assert
-    expect(() => pollService.createPoll(question, options))
+    expect(() => pollsManager.createPoll(question, options))
       .toThrow('Poll question cannot be empty.');
   });
 
@@ -56,7 +56,7 @@ describe('PollService', () => {
     const question = '   ';
     const options = ['Option1', 'Option2'];
     // Act & Assert
-    expect(() => pollService.createPoll(question, options))
+    expect(() => pollsManager.createPoll(question, options))
       .toThrow('Poll question cannot be empty.');
   });
 
@@ -65,7 +65,7 @@ describe('PollService', () => {
     const question = 'Valid Question?';
     const options = 'Not an array';
     // Act & Assert
-    expect(() => pollService.createPoll(question, options))
+    expect(() => pollsManager.createPoll(question, options))
       .toThrow('Poll must have at least 2 options.');
   });
 
@@ -74,7 +74,7 @@ describe('PollService', () => {
     const question = 'Valid Question?';
     const options = ['Only one option'];
     // Act & Assert
-    expect(() => pollService.createPoll(question, options))
+    expect(() => pollsManager.createPoll(question, options))
       .toThrow('Poll must have at least 2 options.');
   });
 
@@ -83,7 +83,7 @@ describe('PollService', () => {
     const question = 'Valid Question?';
     const options = ['Option1', ''];
     // Act & Assert
-    expect(() => pollService.createPoll(question, options))
+    expect(() => pollsManager.createPoll(question, options))
       .toThrow('Poll must have at least 2 options.');
   });
 
@@ -97,20 +97,20 @@ describe('PollService', () => {
       id: pollId,
       options: ['Option1','Option2']
     };
-    pollRepository.getPoll.mockReturnValue(poll);
+   pollsMemoryManagement.getPoll.mockReturnValue(poll);
 
     // Act & Assert
-    expect(() => pollService.vote(pollId, optionText)).not.toThrow();
+    expect(() => pollsManager.vote(pollId, optionText)).not.toThrow();
   });
 
   test('vote should throw error when poll is not found', () => {
     // Arrange
     const pollId = 1;
     const optionText = 'Option1';
-    pollRepository.getPoll.mockReturnValue(undefined);
+    pollsMemoryManagement.getPoll.mockReturnValue(undefined);
 
     // Act & Assert
-    expect(() => pollService.vote(pollId, optionText))
+    expect(() => pollsManager.vote(pollId, optionText))
       .toThrow(`Poll with ID ${pollId} not found.`);
   });
 
@@ -125,10 +125,10 @@ describe('PollService', () => {
         { option: 'Option2' }
       ]
     };
-    pollRepository.getPoll.mockReturnValue(poll);
+    pollsMemoryManagement.getPoll.mockReturnValue(poll);
 
     // Act & Assert
-    expect(() => pollService.vote(pollId, optionText))
+    expect(() => pollsManager.vote(pollId, optionText))
       .toThrow(`Option "${optionText}" does not exist in poll ${pollId}.`);
   });
 
@@ -146,10 +146,10 @@ describe('PollService', () => {
         { option: 'Option2', votes: 4 }
       ]
     };
-    pollRepository.getPoll.mockReturnValue(poll);
+    pollsMemoryManagement.getPoll.mockReturnValue(poll);
 
     // Act
-    const results = pollService.getResults(pollId);
+    const results = pollsManager.getResults(pollId);
 
     // Assert
     expect(results).toEqual({
@@ -162,10 +162,10 @@ describe('PollService', () => {
   test('getResults should throw error when poll is not found', () => {
     // Arrange
     const pollId = 1;
-    pollRepository.getPoll.mockReturnValue(undefined);
+    pollsMemoryManagement.getPoll.mockReturnValue(undefined);
 
     // Act & Assert
-    expect(() => pollService.getResults(pollId))
+    expect(() => pollsManager.getResults(pollId))
       .toThrow(`Poll with ID ${pollId} not found.`);
   });
 
@@ -174,7 +174,7 @@ describe('PollService', () => {
     const pollId = '1'; // pollId as string instead of number
 
     // Act & Assert
-    expect(() => pollService.getResults(pollId))
+    expect(() => pollsManager.getResults(pollId))
       .toThrow('id must be a string or number');
   });
 });

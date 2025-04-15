@@ -48,9 +48,9 @@ export default class Poll {
      * @throws {TypeError} Throws if the id is not a string or number, if question is not a string,
      *                     or if options is not an array of strings.
      */
-    constructor(id, question, options, creator) {
-      if (typeof id !== 'string' && typeof id !== 'number') {
-        throw new TypeError('id must be a string or number');
+    constructor(uuid, question, options, creator) {
+      if (typeof uuid !== 'string' && typeof uuid !== 'number') {
+        throw new TypeError('uuid must be a string or number');
       }
       if (typeof question !== 'string') {
         throw new TypeError('question must be a string');
@@ -59,7 +59,7 @@ export default class Poll {
         throw new TypeError('options must be an array of string');
       }
   
-      this.#id = id;
+      this.#uuid = uuid;
       this.#question = question;
       this.#options = options;
       this.#totalVotes = 0;
@@ -76,8 +76,8 @@ export default class Poll {
      *
      * @return {string|number} The id of the poll.
      */
-    get id() {
-      return this.#id;
+    get uuid() {
+      return this.#uuid;
     }
   
     /**

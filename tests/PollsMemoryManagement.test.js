@@ -1,12 +1,12 @@
-// test/PollRepository.test.js
-import PollRepository from '../src/repositories/PollRepository.js';
+// test/PollsMemoryManagement.test.js
+import PollsMemoryManagement from '../src/repositories/PollsMemoryManagement.js';
 
 describe('PollRepository Class', () => {
     let pollRepo;
 
     // Reset repository for each test
     beforeEach(() => {
-        pollRepo = new PollRepository();
+        pollRepo = new PollsMemoryManagement();
     });
 
     describe('Basic Functionality Tests', () => {
@@ -42,8 +42,8 @@ describe('PollRepository Class', () => {
             const poll2 = pollRepo.createPoll(question2, options2);
 
             // Assert
-            expect(poll1.id).toBe(1);
-            expect(poll2.id).toBe(2);
+            expect(poll1.uuid).toBe(1);
+            expect(poll2.uuid).toBe(2);
         });       
     });
 
@@ -55,11 +55,11 @@ describe('PollRepository Class', () => {
             const createdPoll = pollRepo.createPoll(question, options);
 
             // Act
-            const retrievedPoll = pollRepo.getPoll(createdPoll.id);
+            const retrievedPoll = pollRepo.getPoll(createdPoll.uuid);
 
             // Assert
             expect(retrievedPoll).toBeDefined();
-            expect(retrievedPoll.id).toBe(createdPoll.id);
+            expect(retrievedPoll.uuid).toBe(createdPoll.uuid);
             expect(retrievedPoll.question).toBe(question);
         });
 
@@ -173,8 +173,8 @@ describe('PollRepository Class', () => {
       const poll2 = pollRepo.createPoll('Q2?', ['C', 'D']);
 
       // Act
-      const retrievedPoll1 = pollRepo.getPoll(poll1.id);
-      const retrievedPoll2 = pollRepo.getPoll(poll2.id);
+      const retrievedPoll1 = pollRepo.getPoll(poll1.uuid);
+      const retrievedPoll2 = pollRepo.getPoll(poll2.uuid);
 
       // Assert
       expect(retrievedPoll1).toBeDefined();

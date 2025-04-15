@@ -13,7 +13,7 @@ describe('Poll Class', () => {
     const poll = new Poll(id, question, options);
 
     // Assert
-    expect(poll.id).toBe(id);
+    expect(poll.uuid).toBe(id);
     expect(poll.question).toBe(question);
     expect(poll.options).toEqual(options);
     expect(poll.totalVotes).toBe(0);
@@ -31,7 +31,7 @@ describe('Poll Class', () => {
     const poll = new Poll(id, question, options);
 
     // Assert
-    expect(poll.id).toBe(id);
+    expect(poll.uuid).toBe(id);
   });
 
   // Negative Test: invalid id type
