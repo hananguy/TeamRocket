@@ -16,8 +16,8 @@ export default class PollsManager {
    *
    * @param {PollsMemoryManagement} [PollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
    */
-  constructor(PollsMemoryManagement = new PollsMemoryManagement()) {
-    this.PollsMemoryManagement = PollsMemoryManagement;
+  constructor(pollsMemoryManagement) {
+    this.PollsMemoryManagement = pollsMemoryManagement || new PollsMemoryManagement();
   }
 
   /**
@@ -113,5 +113,15 @@ export default class PollsManager {
       totalVotes: poll.totalVotes,
       results: poll.results
     };
+  }
+
+  /**
+   * Deletes a poll with the specified ID and username.
+   *
+   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} username - The username of the person requesting the deletion.
+   */
+  deletePoll(pollId, username) {
+    this.PollsMemoryManagement.deletePoll(pollId, username);
   }
 }

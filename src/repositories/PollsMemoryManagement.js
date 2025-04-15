@@ -16,20 +16,12 @@ export default class PollsMemoryManagement {
    * @type {Map<number, Poll>}
    */
   #polls;
-
-  /**
-   * @private
-   * @type {number}
-   */
-  #nextId;
-
   /**
    * Creates an instance of PollRepository.
    */
   constructor() {
     // In-memory storage for polls: Key => pollId, Value => Poll instance.
     this.#polls = new Map();
-    this.#nextId = 1; // For auto-incrementing IDs.
   }
 
   /**
@@ -54,8 +46,7 @@ export default class PollsMemoryManagement {
     ) {
       throw new TypeError('options must be an array of non-empty strings');
     }
-
-    const id = this.#nextId++;
+;
     const poll = new Poll(id, question, options);
     this.#polls.set(id, poll);
     return poll;
@@ -103,4 +94,28 @@ export default class PollsMemoryManagement {
   getAllPolls() {
     return Array.from(this.#polls.values());
   }
+
+  /**
+   * Deletes a poll by its ID if the username matches the creator.
+   *
+   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} username - The username of the poll creator.
+   * @throws {Error} If the poll does not exist or if the username does not match the creator.
+   *
+   * @example
+   * repo.deletePoll(1, "creatorUsername");
+   */
+  deletePoll(pollId, username) {
+    const poll = this.getPoll(pollId);
+    if (!poll) {
+        throw new Error(`Poll with ID ${pollId} not found.`);
+    }
+    if (poll.creator !== username) {
+        throw new Error('Only the creator can delete this poll.');
+    }
+    this.#polls.delete(pollId);
+  }
+  
 }
+
+

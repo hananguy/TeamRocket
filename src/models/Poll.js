@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /**
  * Represents a poll with a question, multiple options, and vote tracking.
  *
@@ -42,13 +44,13 @@ export default class Poll {
     /**
      * Creates an instance of Poll.
      *
-     * @param {string|number} id - Unique identifier for the poll.
+     * @param {string|number} uuid - Unique identifier for the poll.
      * @param {string} question - The question posed by the poll.
      * @param {string[]} options - An array of strings representing the poll options.
      * @throws {TypeError} Throws if the id is not a string or number, if question is not a string,
      *                     or if options is not an array of strings.
      */
-    constructor(uuid, question, options, creator) {
+    constructor(question, options, creator) {
       if (typeof uuid !== 'string' && typeof uuid !== 'number') {
         throw new TypeError('uuid must be a string or number');
       }
@@ -59,7 +61,7 @@ export default class Poll {
         throw new TypeError('options must be an array of string');
       }
   
-      this.#uuid = uuid;
+      this.#uuid = uuidv4(); // Generate a unique identifier for the poll
       this.#question = question;
       this.#options = options;
       this.#totalVotes = 0;
