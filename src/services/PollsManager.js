@@ -1,4 +1,5 @@
 import PollsMemoryManagement from '../repositories/PollsMemoryManagement.js';
+import Poll from '../models/Poll.js';
 
 /**
  * Service layer for handling poll business logic.
@@ -17,20 +18,29 @@ export default class PollsManager {
    * @param {PollsMemoryManagement} [PollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
    */
   constructor(pollsMemoryManagement) {
-    this.PollsMemoryManagement = pollsMemoryManagement || new PollsMemoryManagement();
+    this.pollsMemoryManagement = pollsMemoryManagement || new PollsMemoryManagement();
   }
 
+
   /**
-   * Retrieves the PollsMemoryManagement instance.
+   * Retrieves all polls from the memory management system.
    *
-   * @returns {PollsMemoryManagement} The current PollsMemoryManagement instance.
-   *
-   * @example
-   * const pollRepo = pollService.getPolls();
+   * @returns {Array} An array of all polls.
    */
   getPolls() {
-    return this.PollsMemoryManagement;
+    return this.pollsMemoryManagement.getAllPolls();
   }
+
+
+  /**
+   * Retrieves a poll by its ID.  
+   * 
+   * @param {number} pollId - The unique identifier of the poll.
+   * @returns {Poll|null} The Poll instance if found; otherwise, null.
+   */
+  getPoll(pollId) {
+    return this.pollsMemoryManagement.getPoll(pollId);
+  } 
 
   /**
    * Creates a new poll with the provided question and options.
@@ -44,7 +54,7 @@ export default class PollsManager {
    * @example
    * const poll = pollService.createPoll("Favorite programming language?", ["JavaScript", "Python"]);
    */
-  createPoll(question, options) {
+  createPoll(question, options, creator) {
     // Validate question
     if (!question || typeof question !== 'string' || question.trim().length === 0) {
       throw new Error('Poll question cannot be empty.');
@@ -58,8 +68,11 @@ export default class PollsManager {
     ) {
       throw new Error('Poll must have at least 2 options.');
     }
-
-    return this.PollsMemoryManagement.createPoll(question, options);
+    const poll = new Poll(question, options, creator);
+    this.pollsMemoryManagement.addPoll(poll);
+  
+    return poll;
+    
   }
 
   /**
@@ -74,9 +87,10 @@ export default class PollsManager {
    * pollService.vote(1, "Blue");
    */
   vote(pollId, optionText) {
-    const poll = this.PollsMemoryManagement.getPoll(pollId);
+    const poll = this.pollsMemoryManagement.getPoll(pollId);
+
     if (!poll) {
-      throw new Error(`Poll with ID ${pollId} not found.`);
+      throw new Error(`Pool Manager: Poll with ID ${pollId} not found.`);
     }
 
     const optionExists = poll.options.includes(optionText);
@@ -84,7 +98,7 @@ export default class PollsManager {
       throw new Error(`Option "${optionText}" does not exist in poll ${pollId}.`);
     }
     
-    this.PollsMemoryManagement.votePoll(pollId, optionText);
+    this.pollsMemoryManagement.votePoll(pollId, optionText);
   }
 
   /**
@@ -103,7 +117,7 @@ export default class PollsManager {
     if (typeof pollId !== 'number') {
       throw new TypeError('id must be a string or number');
     }
-    const poll = this.PollsMemoryManagement.getPoll(pollId);
+    const poll = this.pollsMemoryManagement.getPoll(pollId);
     if (!poll) {
       throw new Error(`Poll with ID ${pollId} not found.`);
     }
@@ -122,6 +136,16 @@ export default class PollsManager {
    * @param {string} username - The username of the person requesting the deletion.
    */
   deletePoll(pollId, username) {
-    this.PollsMemoryManagement.deletePoll(pollId, username);
-  }
+    const poll = this.pollsMemoryManagement.getPoll(pollId);
+
+    if (!poll) {
+        throw new Error(`Poll with ID ${pollId} not found.`);
+    }
+
+    if (poll.creator !== username) {
+        throw new Error('Only the creator can delete this poll.');
+    }
+
+    this.pollsMemoryManagement.deletePoll(pollId, username);
+}
 }

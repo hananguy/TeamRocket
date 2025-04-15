@@ -24,32 +24,15 @@ export default class PollsMemoryManagement {
     this.#polls = new Map();
   }
 
+
   /**
-   * Creates a new poll and stores it in memory.
+   * Adds a new poll to the in-memory storage.
    *
-   * @param {string} question - A non-empty string representing the poll question.
-   * @param {string[]} options - An array of non-empty strings representing the poll options.
-   * @returns {Poll} The newly created Poll instance.
-   * @throws {TypeError} If the question is not a non-empty string or if options is not an array of non-empty strings.
-   *
-   * @example
-   * const poll = repo.createPoll("Favorite programming language?", ["JavaScript", "Python", "Java"]);
+   * @param {Object} poll - The poll object to be added.
+   * @param {string} poll.uuid - The unique identifier for the poll.
    */
-  createPoll(question, options) {
-    if (typeof question !== 'string' || question.trim().length === 0) {
-      throw new TypeError('question must be a non-empty string');
-    }
-    if (
-      !Array.isArray(options) ||
-      !options.every(opt => typeof opt === 'string' && opt.trim().length > 0) ||
-      options.length === 0
-    ) {
-      throw new TypeError('options must be an array of non-empty strings');
-    }
-;
-    const poll = new Poll(id, question, options);
-    this.#polls.set(id, poll);
-    return poll;
+  addPoll(poll) {
+    this.#polls.set(poll.uuid, poll);
   }
 
   /**
@@ -76,9 +59,10 @@ export default class PollsMemoryManagement {
    * repo.votePoll(1, "Blue");
    */
   votePoll(pollId, option) {
+    console.log('Id Entered:', pollId);
     const poll = this.getPoll(pollId);
     if (!poll) {
-      throw new Error(`Poll with ID ${pollId} not found.`);
+      throw new Error(`MemoryManager: Poll with ID ${pollId} not found.`);
     }
     poll.vote(option);
   }
@@ -106,13 +90,6 @@ export default class PollsMemoryManagement {
    * repo.deletePoll(1, "creatorUsername");
    */
   deletePoll(pollId, username) {
-    const poll = this.getPoll(pollId);
-    if (!poll) {
-        throw new Error(`Poll with ID ${pollId} not found.`);
-    }
-    if (poll.creator !== username) {
-        throw new Error('Only the creator can delete this poll.');
-    }
     this.#polls.delete(pollId);
   }
   

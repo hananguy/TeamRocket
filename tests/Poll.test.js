@@ -5,87 +5,56 @@ describe('Poll Class', () => {
   // Basic Functionality & Individual Requirement Test
   test('should create a poll with valid id, question, and options', () => {
     // Arrange
-    const id = 'poll1';
     const question = 'What is your favorite color?';
     const options = ['Red', 'Blue', 'Green'];
 
     // Act
-    const poll = new Poll(id, question, options);
+    const poll = new Poll(question, options);
 
     // Assert
-    expect(poll.uuid).toBe(id);
     expect(poll.question).toBe(question);
     expect(poll.options).toEqual(options);
     expect(poll.totalVotes).toBe(0);
     expect(poll.results).toEqual({ Red: 0, Blue: 0, Green: 0 });
   });
 
-  // Test using a numeric id (individual requirement)
-  test('should allow numeric id', () => {
-    // Arrange
-    const id = 123;
-    const question = 'Numeric id test?';
-    const options = ['Yes', 'No'];
-
-    // Act
-    const poll = new Poll(id, question, options);
-
-    // Assert
-    expect(poll.uuid).toBe(id);
-  });
-
-  // Negative Test: invalid id type
-  test('should throw error if id is not a string or number', () => {
-    // Arrange
-    const id = { invalid: true };
-    const question = 'Invalid id test?';
-    const options = ['Option1'];
-
-    // Act & Assert
-    expect(() => new Poll(id, question, options)).toThrow(TypeError);
-    expect(() => new Poll(id, question, options)).toThrow('id must be a string or number');
-  });
-
   // Negative Test: invalid question type
   test('should throw error if question is not a string', () => {
     // Arrange
-    const id = 'poll2';
     const question = 12345;
     const options = ['Option1'];
 
     // Act & Assert
-    expect(() => new Poll(id, question, options)).toThrow(TypeError);
-    expect(() => new Poll(id, question, options)).toThrow('question must be a string');
+    expect(() => new Poll(question, options, 'creator')).toThrow(TypeError);
+    expect(() => new Poll(question, options, 'creator')).toThrow('question must be a string');
   });
 
   // Negative Test: options is not an array
   test('should throw error if options is not an array', () => {
     // Arrange
-    const id = 'poll3';
     const question = 'Test non-array options';
     const options = 'Not an array';
 
     // Act & Assert
-    expect(() => new Poll(id, question, options)).toThrow(TypeError);
-    expect(() => new Poll(id, question, options)).toThrow('options must be an array of string');
+    expect(() => new Poll(question, options,'creator')).toThrow(TypeError);
+    expect(() => new Poll(question, options,'creator')).toThrow('options must be an array of string');
   });
 
   // Negative Test: options array contains non-string element
   test('should throw error if options array contains non-string element', () => {
     // Arrange
-    const id = 'poll4';
     const question = 'Test non-string options';
     const options = ['Valid', 123];
 
     // Act & Assert
-    expect(() => new Poll(id, question, options)).toThrow(TypeError);
-    expect(() => new Poll(id, question, options)).toThrow('options must be an array of string');
+    expect(() => new Poll(question, options, 'creator')).toThrow(TypeError);
+    expect(() => new Poll(question, options, 'creator')).toThrow('options must be an array of string');
   });
 
   // Basic Functionality: Valid voting behavior
   test('should correctly record a vote for a valid option', () => {
     // Arrange
-    const poll = new Poll('poll5', 'Vote test?', ['OptionA', 'OptionB']);
+    const poll = new Poll('Vote test?', ['OptionA', 'OptionB'],'creator');
     
     // Act
     poll.vote('OptionA');
@@ -98,7 +67,7 @@ describe('Poll Class', () => {
   // Negative Test: Voting for an invalid option
   test('should throw error when voting for an invalid option', () => {
     // Arrange
-    const poll = new Poll('poll6', 'Invalid vote test?', ['Yes', 'No']);
+    const poll = new Poll('Invalid vote test?', ['Yes', 'No'], 'creator');
 
     // Act & Assert
     expect(() => poll.vote('Maybe')).toThrow(Error);
@@ -108,7 +77,7 @@ describe('Poll Class', () => {
   // Combination Test: Multiple votes across options
   test('should correctly accumulate multiple votes', () => {
     // Arrange
-    const poll = new Poll('poll7', 'Multiple votes test?', ['A', 'B', 'C']);
+    const poll = new Poll('Multiple votes test?', ['A', 'B', 'C'], 'creator');
 
     // Act
     poll.vote('A'); // A: 1
@@ -125,7 +94,7 @@ describe('Poll Class', () => {
   // Edge Case: Vote for an option that is an empty string (if allowed)
   test('should handle voting for an empty string option', () => {
     // Arrange
-    const poll = new Poll('poll8', 'Empty string option test?', ['', 'Non-empty']);
+    const poll = new Poll('Empty string option test?', ['', 'Non-empty'], 'creator');
     
     // Act
     poll.vote('');
@@ -138,7 +107,7 @@ describe('Poll Class', () => {
   // Edge Case: Poll with empty options array
   test('should create poll with empty options and throw error on vote attempt', () => {
     // Arrange
-    const poll = new Poll('poll9', 'Empty options test?', []);
+    const poll = new Poll('Empty options test?', [], 'creator');
     
     // Act & Assert
     expect(poll.options).toEqual([]);
@@ -149,7 +118,7 @@ describe('Poll Class', () => {
   // Combination Test: Full flow (create poll, vote multiple times, and verify final state)
   test('should handle full poll flow correctly', () => {
     // Arrange
-    const poll = new Poll('poll10', 'Full flow test?', ['Yes', 'No', 'Maybe']);
+    const poll = new Poll('Full flow test?', ['Yes', 'No', 'Maybe'], 'creator');
     
     // Act
     poll.vote('Yes');
@@ -171,8 +140,8 @@ describe('Poll Class', () => {
   // Combination Test: Multiple poll instances maintain independent state
   test('should maintain independent state for multiple poll instances', () => {
     // Arrange
-    const poll1 = new Poll('poll11', 'Poll 1?', ['Opt1', 'Opt2']);
-    const poll2 = new Poll('poll12', 'Poll 2?', ['OptA', 'OptB']);
+    const poll1 = new Poll('Poll 1?', ['Opt1', 'Opt2'], 'creator1');
+    const poll2 = new Poll('Poll 2?', ['OptA', 'OptB'], 'creator2');
 
     // Act
     poll1.vote('Opt1');

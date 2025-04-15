@@ -51,9 +51,7 @@ export default class Poll {
      *                     or if options is not an array of strings.
      */
     constructor(question, options, creator) {
-      if (typeof uuid !== 'string' && typeof uuid !== 'number') {
-        throw new TypeError('uuid must be a string or number');
-      }
+
       if (typeof question !== 'string') {
         throw new TypeError('question must be a string');
       }
@@ -117,6 +115,34 @@ export default class Poll {
     get results() {
       return this.#results;
     }
+
+    
+//   /**
+//    * Creates a new poll and stores it in memory.
+//    *
+//    * @param {string} question - A non-empty string representing the poll question.
+//    * @param {string[]} options - An array of non-empty strings representing the poll options.
+//    * @returns {Poll} The newly created Poll instance.
+//    * @throws {TypeError} If the question is not a non-empty string or if options is not an array of non-empty strings.
+//    *
+//    * @example
+//    * const poll = repo.createPoll("Favorite programming language?", ["JavaScript", "Python", "Java"]);
+//    */
+//   createPoll(question, options, creator) {
+//     if (typeof question !== 'string' || question.trim().length === 0) {
+//       throw new TypeError('question must be a non-empty string');
+//     }
+//     if (
+//       !Array.isArray(options) ||
+//       !options.every(opt => typeof opt === 'string' && opt.trim().length > 0) ||
+//       options.length === 0
+//     ) {
+//       throw new TypeError('options must be an array of non-empty strings');
+//     }
+// ;
+//     const poll = new Poll(id, question, options);
+//     return poll;
+//   }
   
     /**
      * Records a vote for a specified option.

@@ -53,7 +53,7 @@ function createPoll() {
     rl.question("Enter poll options (comma separated, e.g., 'JavaScript, Python, Java'): ", (optionsInput) => {
       const options = optionsInput.split(",").map(opt => opt.trim()).filter(opt => opt.length > 0);
       try {
-        const poll = pollsManager.createPoll(question, options);
+        const poll = pollsManager.createPoll(question, options, "creator"); // Assuming "creator" is a placeholder for the actual creator
         console.log(`Poll created with ID: ${poll.uuid}`);
       } catch (error) {
         console.error("Error creating poll:", error.message);
@@ -67,7 +67,7 @@ function createPoll() {
  * Prompts the user to vote on an existing poll.
  */
 function votePoll() {
-  const polls = pollsManager.getPolls().getAllPolls();
+  const polls = pollsManager.getPolls();
   if (polls.length === 0) {
     console.log("No polls available. Please create a poll first.");
     return mainMenu();
@@ -79,26 +79,26 @@ function votePoll() {
   });
 
   rl.question("Enter poll ID: ", (idInput) => {
-    const pollId = parseInt(idInput.trim(), 10);
-    const poll = pollsManager.getPolls().getPoll(pollId);
+    const pollId = idInput.trim(); // שמור את ה-ID כמחרוזת
+    const poll = pollsManager.getPoll(pollId); // השתמש ב-ID כפי שהוא
     if (!poll) {
-      console.log(`Poll with ID ${pollId} not found.`);
-      return mainMenu();
+        console.log(`Poll with ID ${pollId} not found.`);
+        return mainMenu();
     }
 
     console.log(`Options for poll "${poll.question}":`);
     poll.options.forEach(option => {
-      console.log(`- ${option}`);
+        console.log(`- ${option}`);
     });
 
     rl.question("Enter option to vote for: ", (optionText) => {
-      try {
-        pollsManager.vote(pollId, optionText.trim());
-        console.log(`Vote recorded for option "${optionText.trim()}" in poll ${pollId}.`);
-      } catch (error) {
-        console.error("Error recording vote:", error.message);
-      }
-      mainMenu();
+        try {
+            pollsManager.vote(pollId, optionText.trim());
+            console.log(`Vote recorded for option "${optionText.trim()}" in poll ${pollId}.`);
+        } catch (error) {
+            console.error("Error recording vote:", error.message);
+        }
+        mainMenu();
     });
   });
 }
