@@ -90,7 +90,8 @@ export default class PollsManager {
    * @returns {Poll[]} An array of polls the user has voted in.
    */
   listPollsVotedByUser(username) {
-    return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
+    return this.pollsMemoryManagement.listPollsVotedByUser(username);
+    //return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
   }
 
   /**

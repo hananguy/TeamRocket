@@ -13,7 +13,7 @@ import Poll from '../models/Poll.js';
 export default class PollsMemoryManagement {
   /**
    * @private
-   * @type {Map<number, Poll>}
+   * @type {Map< string, Poll>}
    */
   #polls;
   /**
@@ -28,17 +28,19 @@ export default class PollsMemoryManagement {
   /**
    * Adds a new poll to the in-memory storage.
    *
-   * @param {Object} poll - The poll object to be added.
-   * @param {string} poll.uuid - The unique identifier for the poll.
+   * @param {Poll} poll - The poll object to be added.
    */
   addPoll(poll) {
+    if (!(poll instanceof Poll)) {
+      throw new Error("The provided object is not an instance of Poll.");
+    }
     this.#polls.set(poll.uuid, poll);
   }
 
   /**
    * Retrieves a poll by its ID.
    *
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @returns {Poll|null} The Poll instance if found; otherwise, null.
    *
    * @example
@@ -51,20 +53,20 @@ export default class PollsMemoryManagement {
   /**
    * Registers a vote for a specified option in a given poll.
    *
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @param {string} option - The option for which the vote is cast.
    * @throws {Error} If the poll does not exist or if the specified option is invalid.
    *
    * @example
    * repo.votePoll(1, "Blue");
    */
-  votePoll(pollId, option) {
+  votePoll(pollId, option, username) {
     console.log('Id Entered:', pollId);
     const poll = this.getPoll(pollId);
     if (!poll) {
       throw new Error(`MemoryManager: Poll with ID ${pollId} not found.`);
     }
-    poll.vote(option);
+    poll.vote(option, username);
   }
 
   /**

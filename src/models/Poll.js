@@ -10,31 +10,26 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export default class Poll {
     /**
-     * @private
      * @type {Object.<string, number>}
      */
     #results;
   
     /**
-     * @private
-     * @type {string|number}
+     * @type {string}
      */
     #uuid;
   
     /**
-     * @private
      * @type {string}
      */
     #question;
   
     /**
-     * @private
      * @type {string[]}
      */
     #options;
   
     /**
-     * @private
      * @type {number}
      */
     #totalVotes;
@@ -45,7 +40,6 @@ export default class Poll {
     /**
      * Creates an instance of Poll.
      *
-     * @param {string|number} uuid - Unique identifier for the poll.
      * @param {string} question - The question posed by the poll.
      * @param {string[]} options - An array of strings representing the poll options.
      * @throws {TypeError} Throws if the id is not a string or number, if question is not a string,
