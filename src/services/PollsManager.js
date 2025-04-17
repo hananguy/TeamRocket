@@ -76,29 +76,35 @@ export default class PollsManager {
   }
 
   /**
-   * Registers a vote for a specified option in a poll.
-   *
-   * @param {number} pollId - The unique identifier of the poll.
-   * @param {string} optionText - The text of the option to vote for.
-   * @throws {Error} Throws an error if the poll with the given ID is not found.
-   * @throws {Error} Throws an error if the specified option does not exist in the poll.
-   *
-   * @example
-   * pollService.vote(1, "Blue");
+   * Lists all polls created by a specific user.
+   * @param {string} username - The username of the creator.
+   * @returns {Poll[]} An array of polls created by the user.
    */
-  vote(pollId, optionText) {
+  listPollsByCreator(username) {
+    return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.creator === username);
+  }
+
+  /**
+   * Lists all polls a user has voted in.
+   * @param {string} username - The username of the voter.
+   * @returns {Poll[]} An array of polls the user has voted in.
+   */
+  listPollsVotedByUser(username) {
+    return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
+  }
+
+  /**
+   * Registers a vote for a specified option in a poll.
+   * @param {string} pollId - The unique identifier of the poll.
+   * @param {string} optionText - The text of the option to vote for.
+   * @param {string} username - The username of the voter.
+   */
+  vote(pollId, optionText, username) {
     const poll = this.pollsMemoryManagement.getPoll(pollId);
-
     if (!poll) {
-      throw new Error(`Pool Manager: Poll with ID ${pollId} not found.`);
+      throw new Error(`Poll with ID ${pollId} not found.`);
     }
-
-    const optionExists = poll.options.includes(optionText);
-    if (!optionExists) {
-      throw new Error(`Option "${optionText}" does not exist in poll ${pollId}.`);
-    }
-    
-    this.pollsMemoryManagement.votePoll(pollId, optionText);
+    poll.vote(optionText, username);
   }
 
   /**
@@ -114,9 +120,6 @@ export default class PollsManager {
    * // results: { question: "Favorite programming language?", totalVotes: 5, results: { "JavaScript": 3, "Python": 2 } }
    */
   getResults(pollId) {
-    if (typeof pollId !== 'number') {
-      throw new TypeError('id must be a string or number');
-    }
     const poll = this.pollsMemoryManagement.getPoll(pollId);
     if (!poll) {
       throw new Error(`Poll with ID ${pollId} not found.`);

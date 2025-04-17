@@ -40,6 +40,7 @@ export default class Poll {
     #totalVotes;
 
     #creator; // The creator of the poll (user ID or username)
+    #voters; // A set to track users who have voted
   
     /**
      * Creates an instance of Poll.
@@ -115,47 +116,26 @@ export default class Poll {
     get results() {
       return this.#results;
     }
-
-    
-//   /**
-//    * Creates a new poll and stores it in memory.
-//    *
-//    * @param {string} question - A non-empty string representing the poll question.
-//    * @param {string[]} options - An array of non-empty strings representing the poll options.
-//    * @returns {Poll} The newly created Poll instance.
-//    * @throws {TypeError} If the question is not a non-empty string or if options is not an array of non-empty strings.
-//    *
-//    * @example
-//    * const poll = repo.createPoll("Favorite programming language?", ["JavaScript", "Python", "Java"]);
-//    */
-//   createPoll(question, options, creator) {
-//     if (typeof question !== 'string' || question.trim().length === 0) {
-//       throw new TypeError('question must be a non-empty string');
-//     }
-//     if (
-//       !Array.isArray(options) ||
-//       !options.every(opt => typeof opt === 'string' && opt.trim().length > 0) ||
-//       options.length === 0
-//     ) {
-//       throw new TypeError('options must be an array of non-empty strings');
-//     }
-// ;
-//     const poll = new Poll(id, question, options);
-//     return poll;
-//   }
   
     /**
      * Records a vote for a specified option.
      *
      * @param {string} option - The option to vote for.
-     * @throws {Error} Throws an error if the specified option is not valid.
+     * @param {string} username - The username of the voter.
+     * @throws {Error} Throws an error if the specified option is not valid or if the user has already voted.
      */
-    vote(option) {
+    vote(option, username) {
       if (!(option in this.#results)) {
         throw new Error(`Invalid option: "${option}"`);
       }
+      if (!this.#voters) {
+        this.#voters = new Set(); // Track users who voted
+      }
+      if (this.#voters.has(username)) {
+        throw new Error(`User "${username}" has already voted in this poll.`);
+      }
       this.#results[option] += 1;
       this.#totalVotes += 1;
+      this.#voters.add(username);
     }
   }
-  
