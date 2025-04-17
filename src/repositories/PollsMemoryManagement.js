@@ -12,7 +12,6 @@ import Poll from '../models/Poll.js';
  */
 export default class PollsMemoryManagement {
   /**
-   * @private
    * @type {Map< string, Poll>}
    */
   #polls;
@@ -84,7 +83,7 @@ export default class PollsMemoryManagement {
   /**
    * Deletes a poll by its ID if the username matches the creator.
    *
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @param {string} username - The username of the poll creator.
    * @throws {Error} If the poll does not exist or if the username does not match the creator.
    *

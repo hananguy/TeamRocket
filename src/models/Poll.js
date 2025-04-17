@@ -69,7 +69,7 @@ export default class Poll {
     /**
      * Gets the poll's unique identifier.
      *
-     * @return {string|number} The id of the poll.
+     * @return {string} The id of the poll.
      */
     get uuid() {
       return this.#uuid;
@@ -109,6 +109,14 @@ export default class Poll {
      */
     get results() {
       return this.#results;
+    }
+
+    get creator() {
+      return this.#creator;
+    }
+
+    get voters() {
+      return this.#voters;
     }
   
     /**

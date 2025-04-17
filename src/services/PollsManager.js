@@ -15,7 +15,7 @@ export default class PollsManager {
   /**
    * Creates an instance of PollService.
    *
-   * @param {PollsMemoryManagement} [PollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
+   * @param {PollsMemoryManagement} [pollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
    */
   constructor(pollsMemoryManagement) {
     this.pollsMemoryManagement = pollsMemoryManagement || new PollsMemoryManagement();
@@ -35,7 +35,7 @@ export default class PollsManager {
   /**
    * Retrieves a poll by its ID.  
    * 
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @returns {Poll|null} The Poll instance if found; otherwise, null.
    */
   getPoll(pollId) {
@@ -90,8 +90,8 @@ export default class PollsManager {
    * @returns {Poll[]} An array of polls the user has voted in.
    */
   listPollsVotedByUser(username) {
-    return this.pollsMemoryManagement.listPollsVotedByUser(username);
-    //return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
+    //return this.pollsMemoryManagement.listPollsVotedByUser(username);
+    return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
   }
 
   /**
@@ -111,7 +111,7 @@ export default class PollsManager {
   /**
    * Retrieves the results of a specified poll.
    *
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @returns {Object} An object containing the poll's question, total vote count, and the vote counts for each option.
    * @throws {TypeError} Throws if pollId is not a number.
    * @throws {Error} Throws if the poll with the given ID is not found.
@@ -136,7 +136,7 @@ export default class PollsManager {
   /**
    * Deletes a poll with the specified ID and username.
    *
-   * @param {number} pollId - The unique identifier of the poll.
+   * @param {string} pollId - The unique identifier of the poll.
    * @param {string} username - The username of the person requesting the deletion.
    */
   deletePoll(pollId, username) {

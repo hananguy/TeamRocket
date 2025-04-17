@@ -19,7 +19,8 @@ function mainMenu() {
   console.log("5. List all polls");
   console.log("6. List polls created by a user");
   console.log("7. List polls a user has voted in");
-  console.log("8. Exit");
+  console.log("8. Delete a poll");
+  console.log("9. Exit");
   rl.question("Select an option: ", (choice) => {
     switch (choice.trim()) {
       case '1':
@@ -44,6 +45,9 @@ function mainMenu() {
         listPollsVotedByUser();
         break;
       case '8':
+        deletePoll();
+        break;
+      case '9':
         console.log("Goodbye!");
         rl.close();
         break;
@@ -68,8 +72,8 @@ function createUser() {
 }
 
 function createPoll() {
-  rl.question("Enter poll question: ", (question) => {
-    rl.question("Enter poll options (comma separated): ", (optionsInput) => {
+  rl.question("Enter poll question (e.g., 'What is your favorite programming language?'): ", (question) => {
+    rl.question("Enter poll options (comma separated, e.g., 'JavaScript, Python, Java'): ", (optionsInput) => {
       rl.question("Enter your username: ", (username) => {
         if (!userManager.users.has(username.trim())) {
           console.error(`User "${username}" does not exist. Please create the user first.`);
@@ -78,7 +82,7 @@ function createPoll() {
         const options = optionsInput.split(",").map(opt => opt.trim()).filter(opt => opt.length > 0);
         try {
           const poll = pollsManager.createPoll(question, options, username.trim());
-          console.log(`Poll created with ID: ${poll.uuid}`);
+          console.log(`Poll created by ${username}, with ID: ${poll.uuid}`);
         } catch (error) {
           console.error("Error creating poll:", error.message);
         }
@@ -143,10 +147,15 @@ function listAllPolls() {
   if (polls.length === 0) {
     console.log("No polls available.");
   } else {
-    console.log("All Polls:");
+    console.log("\n--- All Polls ---");
     polls.forEach(poll => {
-      console.log(`ID: ${poll.uuid} - Question: ${poll.question}`);
+      console.log(`Poll ID: ${poll.uuid}`);
+      console.log(`Question: ${poll.question}`);
+      console.log(`Options: ${poll.options.join(", ")}`);
+      console.log(`Creator: ${poll.creator}`);
+      console.log("--------------------");
     });
+
   }
   mainMenu();
 }
@@ -157,10 +166,13 @@ function listPollsByUser() {
       const polls = pollsManager.listPollsByCreator(username.trim());
       if (polls.length === 0) {
         console.log(`No polls found for user "${username}".`);
-      } else {
-        console.log(`Polls created by "${username}":`);
+            } else {
+        console.log(`\n---Polls created by "${username}" ---`);
         polls.forEach(poll => {
-          console.log(`ID: ${poll.uuid} - Question: ${poll.question}`);
+          console.log(`Poll ID: ${poll.uuid}`);
+          console.log(`Question: ${poll.question}`);
+          console.log(`Options: ${poll.options.join(", ")}`);
+          console.log("--------------------");
         });
       }
     } catch (error) {
@@ -177,15 +189,32 @@ function listPollsVotedByUser() {
       if (polls.length === 0) {
         console.log(`No polls found that user "${username}" has voted in.`);
       } else {
-        console.log(`Polls voted by "${username}":`);
+        console.log(`\n--- Polls Voted by "${username}" ---`);
         polls.forEach(poll => {
-          console.log(`ID: ${poll.uuid} - Question: ${poll.question}`);
+          console.log(`Poll ID: ${poll.uuid}`);
+          console.log(`Question: ${poll.question}`);
+          console.log(`Options: ${poll.options.join(", ")}`);
+          console.log("--------------------");
         });
       }
     } catch (error) {
       console.error("Error listing polls:", error.message);
     }
     mainMenu();
+  });
+}
+
+function deletePoll() {
+  rl.question("Enter poll ID to delete: ", (pollId) => {
+    rl.question("Enter your username: ", (username) => {
+      try {
+        pollsManager.deletePoll(pollId.trim(), username.trim());
+        console.log(`Poll with ID "${pollId}" deleted successfully.`);
+      } catch (error) {
+        console.error("Error deleting poll:", error.message);
+      }
+      mainMenu();
+    });
   });
 }
 
