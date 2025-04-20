@@ -106,7 +106,7 @@ router.delete('/polls/:id', (req, res) => {
   const { username } = req.body;
 
   try {
-    pollsManager.deletePoll(Number(id), username);
+    pollsManager.deletePoll(id, username);
     res.status(200).send({ message: 'Poll deleted successfully.' });
   } catch (error) {
     res.status(400).send({ error: error.message });

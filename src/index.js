@@ -113,7 +113,7 @@ function votePoll() {
           return mainMenu();
         }
         try {
-          pollsManager.vote(pollId.trim(), optionText, username.trim());
+          pollsManager.vote(pollId.trim(), parseInt(optionIndex), username.trim());
           console.log(`Vote recorded for option "${optionText}" by user "${username}".`);
         } catch (error) {
           console.error("Error voting:", error.message);

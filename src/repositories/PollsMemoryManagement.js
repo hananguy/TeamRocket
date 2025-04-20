@@ -12,7 +12,7 @@ import Poll from '../models/Poll.js';
  */
 export default class PollsMemoryManagement {
   /**
-   * @type {Map< string, Poll>}
+   * @type {Map<string, Poll>}
    */
   #polls;
   /**
@@ -53,19 +53,19 @@ export default class PollsMemoryManagement {
    * Registers a vote for a specified option in a given poll.
    *
    * @param {string} pollId - The unique identifier of the poll.
-   * @param {string} option - The option for which the vote is cast.
+   * @param {number} optionIndex - The option for which the vote is cast.
    * @throws {Error} If the poll does not exist or if the specified option is invalid.
    *
    * @example
    * repo.votePoll(1, "Blue");
    */
-  votePoll(pollId, option, username) {
+  votePoll(pollId, optionIndex, username) {
     console.log('Id Entered:', pollId);
     const poll = this.getPoll(pollId);
     if (!poll) {
       throw new Error(`MemoryManager: Poll with ID ${pollId} not found.`);
     }
-    poll.vote(option, username);
+    poll.vote(optionIndex, username);
   }
 
   /**

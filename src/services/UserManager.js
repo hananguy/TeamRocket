@@ -9,6 +9,9 @@ export default class UserManager {
    * @throws {Error} If the username already exists.
    */
   createUser(username) {
+    if (typeof username !== 'string' || username.trim().length === 0) {
+      throw new Error('Username must be a non-empty string.');
+    }
     if (this.users.has(username)) {
       throw new Error(`Username "${username}" already exists.`);
     }
