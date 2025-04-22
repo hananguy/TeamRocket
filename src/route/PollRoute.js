@@ -109,7 +109,7 @@ router.post('/polls', async (req, res) => {
   }
 
   if (!username || typeof username !== 'string' || username.trim().length === 0) {
-    return res.status(400).json({ error: 'Username must be a non-empty string.' });
+    return res.status(400).json({ error: 'Username must be a non-empty string.'});
   }
 
   try {
@@ -127,7 +127,7 @@ router.delete('/polls/:id', async (req, res) => {
 
   if (!username || typeof username !== 'string' || username.trim().length === 0) {
     return res.status(400).json({ error: 'Username must be a non-empty string.' });
-  }
+  } 
 
   try {
     await pollsManager.deletePoll(id, username.trim());
