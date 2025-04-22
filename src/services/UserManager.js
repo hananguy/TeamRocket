@@ -1,20 +1,25 @@
 export default class UserManager {
+  #users;
+
   constructor() {
-    this.users = new Set(); // Store usernames
+    this.#users = new Set();
   }
 
-  /**
-   * Creates a new user.
-   * @param {string} username - The username to create.
-   * @throws {Error} If the username already exists.
-   */
-  createUser(username) {
+  async createUser(username) {
     if (typeof username !== 'string' || username.trim().length === 0) {
       throw new Error('Username must be a non-empty string.');
     }
-    if (this.users.has(username)) {
+    if (this.#users.has(username)) {
       throw new Error(`Username "${username}" already exists.`);
     }
-    this.users.add(username);
+    this.#users.add(username);
+  }
+
+  async userExists(username) {
+    return this.#users.has(username);
+  }
+
+  async getAllUsers() {
+    return Array.from(this.#users);
   }
 }

@@ -15,7 +15,7 @@ export default class PollsManager {
   /**
    * Creates an instance of PollService.
    *
-   * @param {PollsMemoryManagement} [pollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
+   * @param {PollsMemoryManagement} [PollsMemoryManagement=new PollsMemoryManagement()] - An instance of PollsMemoryManagement used for data storage.
    */
   constructor(pollsMemoryManagement) {
     this.pollsMemoryManagement = pollsMemoryManagement || new PollsMemoryManagement();
@@ -90,30 +90,21 @@ export default class PollsManager {
    * @returns {Poll[]} An array of polls the user has voted in.
    */
   listPollsVotedByUser(username) {
-    //return this.pollsMemoryManagement.listPollsVotedByUser(username);
     return this.pollsMemoryManagement.getAllPolls().filter(poll => poll.voters?.has(username));
   }
 
   /**
    * Registers a vote for a specified option in a poll.
    * @param {string} pollId - The unique identifier of the poll.
-   * @param {number} optionIndex - The text of the option to vote for.
+   * @param {string} optionText - The text of the option to vote for.
    * @param {string} username - The username of the voter.
    */
-  vote(pollId, optionIndex, username) {
+  vote(pollId, optionText, username) {
     const poll = this.pollsMemoryManagement.getPoll(pollId);
     if (!poll) {
       throw new Error(`Poll with ID ${pollId} not found.`);
     }
-
-    if (
-      typeof optionIndex !== 'number' ||
-      optionIndex < 0 ||
-      optionIndex >= poll.options.length
-    ) {
-      throw new Error(`Invalid option index: ${optionIndex}`);
-    }
-    poll.vote(optionIndex, username);
+    poll.vote(optionText, username);
   }
 
   /**
@@ -129,10 +120,6 @@ export default class PollsManager {
    * // results: { question: "Favorite programming language?", totalVotes: 5, results: { "JavaScript": 3, "Python": 2 } }
    */
   getResults(pollId) {
-    // Validate pollId
-    if (typeof pollId !== 'number') {
-      throw new TypeError(`Poll ID must be a number.`);
-    }
     const poll = this.pollsMemoryManagement.getPoll(pollId);
     if (!poll) {
       throw new Error(`Poll with ID ${pollId} not found.`);
