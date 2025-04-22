@@ -60,9 +60,9 @@ function mainMenu() {
 }
 
 function createUser() {
-  rl.question("Enter a username: ", (username) => {
+  rl.question("Enter a username: ", async (username) => {
     try {
-      userManager.createUser(username.trim());
+      await userManager.createUser(username.trim());
       console.log(`User "${username}" created successfully.`);
     } catch (error) {
       console.error("Error creating user:", error.message);
@@ -75,14 +75,14 @@ function createPoll() {
   rl.question("Enter poll question (e.g., 'What is your favorite programming language?'): ", (question) => {
     rl.question("Enter poll options (comma separated, e.g., 'JavaScript, Python, Java'): ", (optionsInput) => {
       rl.question("Enter your username: ", async (username) => {
-        const userExists = await userManager.userExists(username.trim());
-        if (!userExists) {
-          console.error(`User "${username}" does not exist. Please create the user first.`);
-          return mainMenu();
-        }
-        const options = optionsInput.split(",").map(opt => opt.trim()).filter(opt => opt.length > 0);
         try {
-          const poll = pollsManager.createPoll(question, options, username.trim());
+          const userExists = await userManager.userExists(username.trim());
+          if (!userExists) {
+            console.error(`User "${username}" does not exist. Please create the user first.`);
+            return mainMenu();
+          }
+          const options = optionsInput.split(",").map(opt => opt.trim()).filter(opt => opt.length > 0);
+          const poll = await pollsManager.createPoll(question, options, username.trim());
           console.log(`Poll created by ${username}, with ID: ${poll.uuid}`);
         } catch (error) {
           console.error("Error creating poll:", error.message);
@@ -109,14 +109,9 @@ function votePoll() {
 
       rl.question("Enter option index to vote for: ", (optionIndex) => {
         rl.question("Enter your username: ", async (username) => {
-          const optionText = poll.options[parseInt(optionIndex)]; // Map index to option text
-          if (!optionText) {
-            console.error("Invalid option index.");
-            return mainMenu();
-          }
           try {
-            await pollsManager.vote(pollId.trim(), optionText, username.trim());
-            console.log(`Vote recorded for option "${optionText}" by user "${username}".`);
+            await pollsManager.vote(pollId.trim(), parseInt(optionIndex), username.trim());
+            console.log(`Vote recorded for option "${poll.options[optionIndex]}" by user "${username}".`);
           } catch (error) {
             console.error("Error voting:", error.message);
           }
@@ -131,9 +126,9 @@ function votePoll() {
 }
 
 function getResults() {
-  rl.question("Enter poll ID: ", (pollId) => {
+  rl.question("Enter poll ID: ", async (pollId) => {
     try {
-      const results = pollsManager.getResults(pollId.trim());
+      const results = await pollsManager.getResults(pollId.trim());
       console.log("Poll Results:");
       console.log(`Question: ${results.question}`);
       console.log(`Total Votes: ${results.totalVotes}`);
@@ -149,31 +144,34 @@ function getResults() {
 }
 
 function listAllPolls() {
-  const polls = pollsManager.getPolls();
-  if (polls.length === 0) {
-    console.log("No polls available.");
-  } else {
-    console.log("\n--- All Polls ---");
-    polls.forEach(poll => {
-      console.log(`Poll ID: ${poll.uuid}`);
-      console.log(`Question: ${poll.question}`);
-      console.log(`Options: ${poll.options.join(", ")}`);
-      console.log(`Creator: ${poll.creator}`);
-      console.log("--------------------");
-    });
-
-  }
-  mainMenu();
+  pollsManager.getPolls().then((polls) => {
+    if (polls.length === 0) {
+      console.log("No polls available.");
+    } else {
+      console.log("\n--- All Polls ---");
+      polls.forEach(poll => {
+        console.log(`Poll ID: ${poll.uuid}`);
+        console.log(`Question: ${poll.question}`);
+        console.log(`Options: ${poll.options.join(", ")}`);
+        console.log(`Creator: ${poll.creator}`);
+        console.log("--------------------");
+      });
+    }
+    mainMenu();
+  }).catch((error) => {
+    console.error("Error listing polls:", error.message);
+    mainMenu();
+  });
 }
 
 function listPollsByUser() {
-  rl.question("Enter username: ", (username) => {
+  rl.question("Enter username: ", async (username) => {
     try {
-      const polls = pollsManager.listPollsByCreator(username.trim());
+      const polls = await pollsManager.listPollsByCreator(username.trim());
       if (polls.length === 0) {
         console.log(`No polls found for user "${username}".`);
-            } else {
-        console.log(`\n---Polls created by "${username}" ---`);
+      } else {
+        console.log(`\n--- Polls created by "${username}" ---`);
         polls.forEach(poll => {
           console.log(`Poll ID: ${poll.uuid}`);
           console.log(`Question: ${poll.question}`);
@@ -189,9 +187,9 @@ function listPollsByUser() {
 }
 
 function listPollsVotedByUser() {
-  rl.question("Enter username: ", (username) => {
+  rl.question("Enter username: ", async (username) => {
     try {
-      const polls = pollsManager.listPollsVotedByUser(username.trim());
+      const polls = await pollsManager.listPollsVotedByUser(username.trim());
       if (polls.length === 0) {
         console.log(`No polls found that user "${username}" has voted in.`);
       } else {
@@ -212,9 +210,9 @@ function listPollsVotedByUser() {
 
 function deletePoll() {
   rl.question("Enter poll ID to delete: ", (pollId) => {
-    rl.question("Enter your username: ", (username) => {
+    rl.question("Enter your username: ", async (username) => {
       try {
-        pollsManager.deletePoll(pollId.trim(), username.trim());
+        await pollsManager.deletePoll(pollId.trim(), username.trim());
         console.log(`Poll with ID "${pollId}" deleted successfully.`);
       } catch (error) {
         console.error("Error deleting poll:", error.message);
